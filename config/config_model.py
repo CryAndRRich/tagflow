@@ -60,7 +60,7 @@ class CONFIG_MODEL:
     
     OTIMIZER_KWARGS: Dict[str, Any] = {
         "lr": 1e-3,
-        "weight_decay": 1e-5
+        "weight_decay": 1e-2
     }
 
     SCHEDULER_KWARGS: Dict[str, Any] = {
