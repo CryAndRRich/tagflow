@@ -19,7 +19,7 @@ class DataManager:
                  input_root: str, 
                  work_dir: str, 
                  config_data: CONFIG_DATA,
-                 seed_worker: function,
+                 seed_worker,
                  data_generator: torch.Generator,
                  random_seed: int) -> None:
         
