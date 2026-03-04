@@ -11,7 +11,7 @@ class CONFIG_MODEL:
     EARLY_STOPPING_STAGE_1: int = 8
     EARLY_STOPPING_STAGE_2: int = 15
 
-    LABEL_SMOOTHING: float = 0.1
+    LABEL_SMOOTHING: float = 0.01
     ALPHA_MAX_LOSS: float = 2.0
 
     MODEL_KWARGS: Dict[str, Dict[str, Any]] = {
