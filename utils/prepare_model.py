@@ -78,7 +78,7 @@ def get_model_optim_schedule(model_name: str,
     """
     Chuẩn bị mô hình, bộ tối ưu hóa và bộ điều chỉnh tốc độ học
     """
-    model_kwargs = update_model_kwargs(data, model_kwargs)
+    model_kwargs = update_model_kwargs(data, attribute_idx, model_kwargs)
     model = get_model(
         name=model_name,
         **model_kwargs  
