@@ -33,3 +33,5 @@ def seed_worker(worker_id: int) -> None:
     worker_seed = torch.initial_seed() % 2 ** 32
     random.seed(worker_seed)
     np.random.seed(worker_seed)
+    torch.manual_seed(worker_seed) 
+    torch.cuda.manual_seed(worker_seed)

@@ -10,7 +10,7 @@ from model.models.attention import AttentionPooling1D
 from model.models import register_model
 
 @register_model("taanet")
-class FinetuneBehaviorModel(nn.Module):
+class TAANet(nn.Module):
     def __init__(self, 
                  vocab_size: int, 
                  num_classes_list: List[int],

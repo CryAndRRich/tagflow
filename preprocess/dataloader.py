@@ -103,7 +103,7 @@ def create_dataloaders(x_train: pd.DataFrame,
         dataset=train_dataset, 
         batch_size=batch_size, 
         shuffle=True, 
-        num_workers=2, 
+        num_workers=0, 
         worker_init_fn=seed_worker, 
         generator=data_generator
     )
@@ -111,13 +111,13 @@ def create_dataloaders(x_train: pd.DataFrame,
         dataset=val_dataset, 
         batch_size=batch_size, 
         shuffle=False, 
-        num_workers=2
+        num_workers=0
     )
     test_loader = DataLoader(
         dataset=test_dataset, 
         batch_size=batch_size, 
         shuffle=False, 
-        num_workers=2
+        num_workers=0
     )
     
     return (train_loader, val_loader, test_loader)
