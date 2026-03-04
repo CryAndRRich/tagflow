@@ -6,8 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 class UserBehaviorDataset(Dataset):
     def __init__(self, 
                  x_df: pd.DataFrame, 
-                 y_df: Optional[pd.DataFrame], 
-                 attr_cols: List[str], 
+                 y_df: Optional[pd.DataFrame],
                  augment: bool = False) -> None:
         """
         Dataset tùy chỉnh cho dữ liệu hành vi người dùng, hỗ trợ tăng cường dữ liệu
@@ -23,7 +22,7 @@ class UserBehaviorDataset(Dataset):
         
         self.has_labels = y_df is not None
         if self.has_labels:
-            self.y_data = y_df[attr_cols].values
+            self.y_data = y_df.drop(columns=["id"]).values
 
     def __len__(self) -> int:
         return len(self.x_data)
