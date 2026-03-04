@@ -15,7 +15,7 @@ class AttentionPooling1D(nn.Module):
                 mask: torch.Tensor = None) -> torch.Tensor:
         scores = self.attention_weights(x) 
         if mask is not None:
-            fill_value = torch.finfo(dtype=scores.dtype).min
+            fill_value = torch.finfo(scores.dtype).min
             scores = scores.masked_fill(~mask.unsqueeze(-1), fill_value)
 
         attn_weights = F.softmax(scores, dim=1)
