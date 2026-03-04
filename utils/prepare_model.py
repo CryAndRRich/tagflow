@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from typing import Any, List, Dict, Tuple
+from typing import Any, List, Dict, Optional, Tuple
 import numpy as np
 from sklearn.utils.class_weight import compute_class_weight
 import torch
@@ -12,7 +12,7 @@ from model import get_model
 from preprocess import DataManager
 
 def get_loss_functions(y_df: torch.Tensor, 
-                       attr_cols: List[str],
+                       attribute_cols: List[str],
                        num_classes_list: List[int], 
                        label_smoothing: float,
                        device=torch.device) -> List[torch.nn.Module]:
@@ -20,7 +20,7 @@ def get_loss_functions(y_df: torch.Tensor,
     Khởi tạo hàm mất mát có trọng số cho mỗi thuộc tính
     """
     loss_fns = []
-    for i, col in enumerate(attr_cols):
+    for i, col in enumerate(attribute_cols):
         y_true = y_df[col].values
         classes = np.unique(y_true)
         raw_weights = compute_class_weight("balanced", classes=classes, y=y_true)
@@ -45,12 +45,16 @@ def get_loss_functions(y_df: torch.Tensor,
 
 
 def update_model_kwargs(data: DataManager,
+                        attribute_idx: Optional[int],
                         model_kwargs: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     if "vocab_size" in model_kwargs.keys():
         model_kwargs["vocab_size"] = data.VOCAB_SIZE
 
     if "num_classes_list" in model_kwargs.keys():
-        model_kwargs["num_classes_list"] = data.NUM_CLASSES_LIST
+        if attribute_idx is not None:
+            model_kwargs["num_classes_list"] = [data.NUM_CLASSES_LIST[attribute_idx]]
+        else:
+            model_kwargs["num_classes_list"] = data.NUM_CLASSES_LIST
 
     if "w2v_tensor" in model_kwargs.keys():
         model_kwargs["w2v_tensor"] = data.W2V_TENSOR
@@ -66,6 +70,7 @@ def update_model_kwargs(data: DataManager,
 
 def get_model_optim_schedule(model_name: str,
                              data: DataManager, 
+                             attribute_idx: Optional[int],
                              model_kwargs: Dict[str, Any], 
                              optim_kwargs: Dict[str, Any],
                              scheduler_kwargs: Dict[str, Any],
