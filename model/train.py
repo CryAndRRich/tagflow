@@ -112,7 +112,7 @@ def train_model_stage_2(model: torch.nn.Module,
                         early_stopping: int,
                         checkpoint_file: str,
                         device: torch.device,
-                        verbose: float = False) -> None:
+                        verbose: float = False) -> torch.nn.Module:
     """
     Huấn luyện mô hình cho tất cả các thuộc tính cùng lúc (giai đoạn 2)
     
@@ -240,3 +240,8 @@ def train_model_stage_2(model: torch.nn.Module,
             if verbose:
                 print("  => Dừng mô hình")
             break
+
+    model.load_state_dict(torch.load(checkpoint_file))
+    if verbose:
+        print(f"\n Hoàn thành huấn luyện | Best Val EM: {best_exact_match:.4f}")
+    return model
