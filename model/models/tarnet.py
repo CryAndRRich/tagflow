@@ -1,9 +1,13 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
 from typing import List
 import torch
 import torch.nn as nn
 
-from .attention import AttentionPooling1D
-from ..models import register_model
+from model.models.attention import AttentionPooling1D
+from model.models import register_model
 
 @register_model("tarnet")
 class TARNet(nn.Module):

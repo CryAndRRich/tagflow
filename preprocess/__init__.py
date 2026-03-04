@@ -1,12 +1,16 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from typing import Tuple
 
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 
-from .preprocess_data import format_dtypes, drop_duplicates_and_leaks, build_vocab_mapping, apply_vocab_mapping, train_w2v_model
-from .dataloader import create_dataloaders
-from ..config import CONFIG_DATA
+from preprocess.preprocess_data import format_dtypes, drop_duplicates_and_leaks, build_vocab_mapping, apply_vocab_mapping, train_w2v_model
+from preprocess.dataloader import create_dataloaders
+from config import CONFIG_DATA
 
 __all__ = ["DataManager"]
 

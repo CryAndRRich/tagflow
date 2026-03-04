@@ -1,10 +1,14 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
 from typing import List, Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .attention import AttentionPooling1D
-from ..models import register_model
+from model.models.attention import AttentionPooling1D
+from model.models import register_model
 
 class DenseGAT(nn.Module):
     def __init__(self, 

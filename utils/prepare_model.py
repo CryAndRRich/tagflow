@@ -1,11 +1,15 @@
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from typing import Any, List, Dict, Tuple
 import numpy as np
 from sklearn.utils.class_weight import compute_class_weight
 import torch
 import torch.optim as optim
 
-from ..model import get_model
-from ..preprocess import DataManager
+from model import get_model
+from preprocess import DataManager
 
 def get_loss_functions(y_df: torch.Tensor, 
                        attr_cols: List[str],
