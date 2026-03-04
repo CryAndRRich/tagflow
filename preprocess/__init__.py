@@ -86,7 +86,7 @@ class DataManager:
         self.NUM_CLASSES_LIST = [(int(y_combined[col].max()) + 1) for col in self.ATTRIBUTE_COLS]
 
     def __create_dataloader(self,
-                            seed_worker: function,
+                            seed_worker,
                             data_generator: torch.Generator) -> None:
         self.train_loader, self.val_loader, self.test_loader = create_dataloaders(
             self.x_train, 

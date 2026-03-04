@@ -68,7 +68,7 @@ def create_dataloaders(x_train: pd.DataFrame,
                        short_seq_length: int,
                        duplicate_factor: int,
                        batch_size: int,
-                       seed_worker: function,
+                       seed_worker,
                        data_generator: torch.Generator) -> Tuple[DataLoader, DataLoader, DataLoader]:
     """
     Tạo DataLoader cho tập train, test và val, với tăng cường dữ liệu cho các chuỗi ngắn
