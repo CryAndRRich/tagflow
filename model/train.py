@@ -36,7 +36,7 @@ def train_model_stage_1(model: torch.nn.Module,
     model = model.to(device)
     best_acc = 0.0
     best_weights = copy.deepcopy(model.state_dict())
-    scaler = GradScaler()
+    scaler = GradScaler("cuda")
 
     early_stopping_count = 0
     for epoch in range(num_epochs):
@@ -47,7 +47,7 @@ def train_model_stage_1(model: torch.nn.Module,
             batch_x, batch_y = batch_x.to(device), batch_y.to(device)
             optimizer.zero_grad(set_to_none=True)
             
-            with autocast():
+            with autocast("cuda"):
                 outputs = model(batch_x)
                 loss = loss_fn(outputs[0], batch_y[:, attribute_idx]).mean()
             
@@ -70,7 +70,7 @@ def train_model_stage_1(model: torch.nn.Module,
         with torch.no_grad():
             for batch_x, batch_y in val_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
-                with autocast():
+                with autocast("cuda"):
                     outputs = model(batch_x)
                 preds = torch.argmax(outputs[0], dim=1)
                 val_correct += (preds == batch_y[:, attribute_idx]).sum().item()
@@ -133,7 +133,7 @@ def train_model_stage_2(model: torch.nn.Module,
     """
     model = model.to(device)
     best_exact_match = 0.0
-    scaler = GradScaler()
+    scaler = GradScaler("cuda")
     
     early_stopping_count = 0
     for epoch in range(num_epochs):
@@ -147,7 +147,7 @@ def train_model_stage_2(model: torch.nn.Module,
             batch_x, batch_y = batch_x.to(device), batch_y.to(device)
             
             optimizer.zero_grad(set_to_none=True)
-            with autocast():
+            with autocast("cuda"):
                 outputs = model(batch_x)
                 
                 attr_losses = []
@@ -192,7 +192,7 @@ def train_model_stage_2(model: torch.nn.Module,
             for batch_x, batch_y in val_loader:
                 batch_x, batch_y = batch_x.to(device), batch_y.to(device)
                 
-                with autocast():
+                with autocast("cuda"):
                     outputs = model(batch_x)
                     
                     attr_losses = []
