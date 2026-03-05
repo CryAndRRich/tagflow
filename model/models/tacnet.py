@@ -144,7 +144,8 @@ class TACNet(nn.Module):
         embedded = embedded.permute(0, 2, 1) 
         
         features = self.backbone(embedded)    
-        pooled_features = self.attn_pool(features, mask=mask).permute(0, 2, 1)
+        features = features.permute(0, 2, 1) 
+        pooled_features = self.attn_pool(features, mask=mask)
         
         x_drop = self.dropout(pooled_features)
         
