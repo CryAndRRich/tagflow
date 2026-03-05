@@ -93,10 +93,12 @@ class TAANet(nn.Module):
         positions = torch.arange(0, seq_len, device=x.device).unsqueeze(0).expand_as(x)
         
         x_emb = self.embedding(x) + self.pos_embedding(positions)
+        
         padding_mask = (x == self.pad_token)
         trans_out = self.transformer(x_emb, src_key_padding_mask=padding_mask)
         
-        pooled_features = self.attn_pool(trans_out, padding_mask)
+        valid_mask = (x != self.pad_token) 
+        pooled_features = self.attn_pool(trans_out, mask=valid_mask) 
 
         outputs = []
         for classifier_head in self.classifier_heads:
