@@ -48,7 +48,6 @@ class CONFIG_MODEL:
         "taanet": {
             "vocab_size": None, 
             "num_classes_list": None,
-            "w2v_tensor": None, 
             "embedding_dim": None, 
             "num_heads": 4, 
             "num_layers": 2,

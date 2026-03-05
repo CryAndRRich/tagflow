@@ -3,6 +3,41 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset, DataLoader
 
+class MaskedBehaviorDataset(Dataset):
+    def __init__(self, 
+                 x_df: pd.DataFrame, 
+                 vocab_size: int, 
+                 mask_token: int, 
+                 mask_prob: float = 0.15) -> None:
+        self.x_data = x_df.drop(columns=["id"]).values
+        self.vocab_size = vocab_size
+        self.mask_token = mask_token
+        self.mask_prob = mask_prob
+
+    def __len__(self) -> int:
+        return len(self.x_data)
+
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+        x_tensor = torch.tensor(self.x_data[idx], dtype=torch.long)
+        labels = torch.full_like(x_tensor, -100)
+        
+        valid_mask = (x_tensor != 0)
+        
+        prob_matrix = torch.rand(len(x_tensor))
+        mask_indices = valid_mask & (prob_matrix < self.mask_prob)
+        labels[mask_indices] = x_tensor[mask_indices]
+        
+        replacement_probs = torch.rand(len(x_tensor))
+        replace_mask = mask_indices & (replacement_probs < 0.8)
+        x_tensor[replace_mask] = self.mask_token
+        
+        replace_random = mask_indices & (replacement_probs >= 0.8) & (replacement_probs < 0.9)
+        random_tokens = torch.randint(1, self.vocab_size, (len(x_tensor),), dtype=torch.long)
+        x_tensor[replace_random] = random_tokens[replace_random]
+        
+        return x_tensor, labels
+    
+    
 class UserBehaviorDataset(Dataset):
     def __init__(self, 
                  x_df: pd.DataFrame, 
@@ -56,6 +91,38 @@ class UserBehaviorDataset(Dataset):
             return (x_tensor, y_tensor)
         
         return x_tensor
+
+
+def create_masked_dataloader(x_df: pd.DataFrame,
+                             vocab_size: int,
+                             mask_token: int,
+                             batch_size: int,
+                             seed_worker,
+                             data_generator: torch.Generator) -> DataLoader:
+    """
+    Tạo DataLoader cho nhiệm vụ Masked Language Modeling (MLM)
+    
+    Tham số:
+        x_df: DataFrame chứa đặc trưng đầu vào
+        vocab_size: Kích thước từ điển
+        mask_token: Giá trị token dùng để masking trong embedding
+        batch_size: Kích thước batch cho DataLoader
+        seed_worker: Hàm để cài đặt seed cho mỗi worker trong DataLoader
+        data_generator: Generator để đảm bảo tính tái lập khi tạo DataLoader
+    
+    Trả về:
+        DataLoader: DataLoader cho nhiệm vụ MLM
+    """
+    masked_dataset = MaskedBehaviorDataset(x_df, vocab_size, mask_token)
+    masked_loader = DataLoader(
+        dataset=masked_dataset, 
+        batch_size=batch_size, 
+        shuffle=True, 
+        num_workers=0, 
+        worker_init_fn=seed_worker, 
+        generator=data_generator
+    )
+    return masked_loader
 
 
 def create_dataloaders(x_train: pd.DataFrame, 

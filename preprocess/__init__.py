@@ -2,14 +2,14 @@ import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from typing import Tuple
+from typing import Tuple, Union
 
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 
 from preprocess.preprocess_data import format_dtypes, drop_duplicates_and_leaks, build_vocab_mapping, apply_vocab_mapping, train_w2v_model
-from preprocess.dataloader import create_dataloaders
+from preprocess.dataloader import create_dataloaders, create_masked_dataloader
 from config import CONFIG_DATA
 
 __all__ = ["DataManager"]
@@ -42,6 +42,7 @@ class DataManager:
         # Biến trạng thái quan trọng
         self.id_to_idx = {}
         self.VOCAB_SIZE = 0
+        self.MASK_TOKEN = 0
         self.NUM_CLASSES_LIST = []
         self.W2V_TENSOR = None
 
@@ -77,6 +78,9 @@ class DataManager:
         )
         for df in ["x_train", "x_val", "x_test"]:
             setattr(self, df, apply_vocab_mapping(getattr(self, df), self.id_to_idx, self.FEATURE_COLS))
+
+        self.MASK_TOKEN = self.VOCAB_SIZE 
+        self.VOCAB_SIZE += 1
 
         # Tính toán tham số Model
         self._update_num_classes()
@@ -149,6 +153,20 @@ class DataManager:
         """Trả về dữ liệu đã được xử lý"""
         return (self.x_train, self.y_train, self.x_val, self.y_val, self.x_test)
     
-    def get_dataloaders(self) -> Tuple[DataLoader, DataLoader, DataLoader]:
+    def get_dataloaders(self, masked: bool = False) -> Union[Tuple[DataLoader, DataLoader, DataLoader], DataLoader]:
         """Trả về DataLoader cho tập train, test và val"""
+        if masked:
+            # Gộp x_train và x_val để mô hình học nhiều pattern nhất có thể
+            x_combined = pd.concat([self.x_train, self.x_val], ignore_index=True)
+            
+            masked_loader = create_masked_dataloader(
+                x_df=x_combined,
+                vocab_size=self.VOCAB_SIZE,
+                mask_token=self.MASK_TOKEN,
+                batch_size=self.BATCH_SIZE,
+                seed_worker=self.SEED_WORKER,
+                data_generator=self.DATA_GENERATOR
+            )
+            return masked_loader
+        
         return (self.train_loader, self.val_loader, self.test_loader)

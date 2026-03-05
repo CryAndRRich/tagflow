@@ -9,12 +9,54 @@ import torch.nn as nn
 from model.models.attention import AttentionPooling1D
 from model.models import register_model
 
+
+@register_model("pretrain_taanet")
+class PretrainTAANet(nn.Module):
+    def __init__(self, 
+                 vocab_size: int, 
+                 embedding_dim: int = 256, 
+                 num_heads: int = 4, 
+                 num_layers: int = 2, 
+                 max_seq_len: int = 500, 
+                 pad_token: int = 0) -> None:
+        super().__init__()
+        self.pad_token = pad_token
+        
+        self.embedding = nn.Embedding(num_embeddings=vocab_size, 
+                                      embedding_dim=embedding_dim, 
+                                      padding_idx=pad_token)
+        self.pos_embedding = nn.Embedding(num_embeddings=max_seq_len, 
+                                          embedding_dim=embedding_dim)
+        
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=embedding_dim, 
+            nhead=num_heads, 
+            dim_feedforward=embedding_dim * 4, 
+            dropout=0.2, 
+            batch_first=True
+        )
+        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+        
+        self.out_linear = nn.Linear(embedding_dim, vocab_size)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        seq_len = x.size(1)
+        positions = torch.arange(0, seq_len, device=x.device).unsqueeze(0).expand_as(x)
+        
+        x_emb = self.embedding(x) + self.pos_embedding(positions)
+        
+        padding_mask = (x == self.pad_token)
+        
+        trans_out = self.transformer(x_emb, src_key_padding_mask=padding_mask)
+        logits = self.out_linear(trans_out)
+        return logits
+
+
 @register_model("taanet")
 class TAANet(nn.Module):
     def __init__(self, 
                  vocab_size: int, 
                  num_classes_list: List[int],
-                 w2v_tensor: torch.Tensor, 
                  embedding_dim: int = 256, 
                  num_heads: int = 4, 
                  num_layers: int = 2, 
@@ -26,7 +68,6 @@ class TAANet(nn.Module):
         Tham số:
             vocab_size: Kích thước từ điển
             num_classes_list: Danh sách số lượng lớp cho mỗi nhiệm vụ phân loại
-            w2v_tensor: Tensor chứa vector nhúng từ điển đã được khởi tạo trước (pre-trained)
             embedding_dim: Số chiều của vector nhúng từ điển
             num_heads: Số lượng head trong multi-head attention
             num_layers: Số lớp Transformer Encoder
@@ -69,7 +110,6 @@ class TAANet(nn.Module):
         ])
 
         self.apply(self._init_weights)
-        self.embedding.weight.data.copy_(w2v_tensor) 
 
     def _init_weights(self, m: nn.Module) -> None:
         if isinstance(m, nn.Linear):

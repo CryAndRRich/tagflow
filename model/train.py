@@ -1,7 +1,51 @@
 import copy
 from typing import List
 import torch
+import torch.nn as nn
+import torch.optim as optim
 from torch.amp import autocast, GradScaler
+
+def train_pretrain_model(model: torch.nn.Module, 
+                         dataloader: torch.utils.data.DataLoader, 
+                         pretrain_file: str,
+                         device: torch.device,
+                         epochs: int = 20, 
+                         lr: float = 5e-4,
+                         verbose: float = False) -> None:
+    
+    model = model.to(device)
+    criterion = nn.CrossEntropyLoss(ignore_index=-100)
+    optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+    scaler = GradScaler("cuda")
+
+    for epoch in range(epochs):
+        model.train()
+        total_loss = 0.0
+
+        for batch_x, batch_y in dataloader:
+            batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+
+            optimizer.zero_grad()
+            
+            with autocast("cuda"): 
+                logits = model(batch_x)
+                logits = logits.view(-1, model.out_linear.out_features)
+                batch_y = batch_y.view(-1)
+                loss = criterion(logits, batch_y)
+            
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+
+            total_loss += loss.item()
+
+        avg_loss = total_loss / len(dataloader)
+        if verbose:
+            print(f"Pretrain Epoch {epoch + 1:02d}/{epochs} | Loss: {avg_loss:.4f}")
+        
+    torch.save(model.state_dict(), pretrain_file)
+    if verbose:
+        print(f"\n Pretraining hoàn thành. Trọng số đã được lưu tại: {pretrain_file}")
 
 def train_model_stage_1(model: torch.nn.Module, 
                         train_loader: torch.utils.data.DataLoader, 
@@ -13,6 +57,7 @@ def train_model_stage_1(model: torch.nn.Module,
                         num_epochs: int, 
                         early_stopping: int,
                         device: torch.device,
+                        pretrain_file: str = None,
                         verbose: float = False) -> torch.nn.Module:
     """
     Huấn luyện mô hình cho một thuộc tính cụ thể (giai đoạn 1)
@@ -28,12 +73,18 @@ def train_model_stage_1(model: torch.nn.Module,
         num_epochs: Số epoch tối đa để huấn luyện
         early_stopping: Số epoch không cải thiện tối đa trước khi dừng
         device: Thiết bị huấn luyện
+        pretrain_file: Đường dẫn đến file chứa trọng số đã được huấn luyện trước (nếu có)
         verbose: Nếu True, in thông tin huấn luyện sau mỗi epoch
     
     Trả về:
         torch.nn.Module: Mô hình đã được huấn luyện tốt nhất
     """
     model = model.to(device)
+
+    if pretrain_file is not None:
+        pretrained_weights = torch.load(pretrain_file, map_location=device)
+        model.load_state_dict(pretrained_weights, strict=False)
+
     best_acc = 0.0
     best_weights = copy.deepcopy(model.state_dict())
     scaler = GradScaler("cuda")
@@ -112,6 +163,7 @@ def train_model_stage_2(model: torch.nn.Module,
                         early_stopping: int,
                         checkpoint_file: str,
                         device: torch.device,
+                        pretrain_file: str = None,
                         verbose: float = False) -> torch.nn.Module:
     """
     Huấn luyện mô hình cho tất cả các thuộc tính cùng lúc (giai đoạn 2)
@@ -129,9 +181,15 @@ def train_model_stage_2(model: torch.nn.Module,
         early_stopping: Số epoch không cải thiện tối đa trước khi dừng
         checkpoint_file: Đường dẫn để lưu mô hình tốt nhất
         device: Thiết bị huấn luyện
+        pretrain_file: Đường dẫn đến file chứa trọng số đã được huấn luyện trước (nếu có)
         verbose: Nếu True, in thông tin huấn luyện sau mỗi epoch
     """
     model = model.to(device)
+    
+    if pretrain_file is not None:
+        pretrained_weights = torch.load(pretrain_file, map_location=device)
+        model.load_state_dict(pretrained_weights, strict=False)
+
     best_exact_match = 0.0
     scaler = GradScaler("cuda")
     
