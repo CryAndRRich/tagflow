@@ -81,12 +81,6 @@ class TAANet(nn.Module):
             if m.padding_idx is not None:
                 with torch.no_grad():
                     m.weight[m.padding_idx].fill_(0)
-        elif isinstance(m, nn.TransformerEncoderLayer):
-            for param in m.parameters():
-                if param.dim() > 1:
-                    nn.init.xavier_uniform_(param)
-                else:
-                    nn.init.zeros_(param)
     
     def forward(self, x: torch.Tensor) -> List[torch.Tensor]:
         seq_len = x.size(1)
