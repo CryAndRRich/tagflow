@@ -32,7 +32,6 @@ class CONFIG_MODEL:
             "w2v_tensor": None, 
             "seq_length": None, 
             "embedding_dim": None, 
-            "window": 3, 
             "kernel_sizes": [3, 5, 7], 
             "expansion_factor": 2, 
             "dropout_rate": 0.3
