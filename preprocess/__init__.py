@@ -79,9 +79,6 @@ class DataManager:
         for df in ["x_train", "x_val", "x_test"]:
             setattr(self, df, apply_vocab_mapping(getattr(self, df), self.id_to_idx, self.FEATURE_COLS))
 
-        self.MASK_TOKEN = self.VOCAB_SIZE 
-        self.VOCAB_SIZE += 1
-
         # Tính toán tham số Model
         self._update_num_classes()
         self.W2V_TENSOR = train_w2v_model(
@@ -159,6 +156,10 @@ class DataManager:
             # Gộp x_train và x_val để mô hình học nhiều pattern nhất có thể
             x_combined = pd.concat([self.x_train, self.x_val], ignore_index=True)
             
+            if self.MASK_TOKEN != 0:
+                self.MASK_TOKEN = self.VOCAB_SIZE 
+                self.VOCAB_SIZE += 1
+
             masked_loader = create_masked_dataloader(
                 x_df=x_combined,
                 vocab_size=self.VOCAB_SIZE,
