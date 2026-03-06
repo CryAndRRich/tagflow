@@ -26,6 +26,7 @@ def set_seed(seed: int) -> None:
     
     print(f"Random seed set to {seed}")
 
+
 def seed_worker(worker_id: int) -> None:
     """
     Cài đặt seed cho mỗi worker trong torch.DataLoader để đảm bảo tính tái lập

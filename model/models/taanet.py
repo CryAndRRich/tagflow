@@ -9,7 +9,6 @@ import torch.nn as nn
 from model.models.attention import AttentionPooling1D
 from model.models import register_model
 
-
 @register_model("pretrain_taanet")
 class PretrainTAANet(nn.Module):
     def __init__(self, 

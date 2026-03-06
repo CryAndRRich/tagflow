@@ -166,7 +166,7 @@ def plot_distractor_analysis(distractors: List[Tuple[int, float, float, float]],
         max_height = max(wrong_weights[i], correct_weights[i])
         ax.text(x[i], 
                 max_height + 2.5, 
-                f"$\Delta$ +{diff_weights[i]:.1f}%", 
+                rf"$\Delta$ +{diff_weights[i]:.1f}%", 
                 ha="center", 
                 va="bottom", 
                 fontsize=10, 

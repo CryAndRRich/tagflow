@@ -15,6 +15,7 @@ def register_model(name: str) -> object:
         return cls
     return wrapper
 
+
 def get_model(name: str, **kwargs) -> object:
     """
     Lấy một instance của mô hình đã đăng ký theo tên
@@ -22,6 +23,7 @@ def get_model(name: str, **kwargs) -> object:
     if name not in __MODEL__:
         raise ValueError(f"Model {name} không tồn tại", available_models=list(__MODEL__.keys()))
     return __MODEL__[name](**kwargs)
+
 
 import model.models.tagnet
 import model.models.tacnet

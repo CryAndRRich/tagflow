@@ -30,6 +30,7 @@ def run_inference(model: torch.nn.Module,
 
     return all_predictions
 
+
 def evaluate_em(y_true: np.ndarray, 
                 y_pred: np.ndarray) -> float:
     """
@@ -42,6 +43,7 @@ def evaluate_em(y_true: np.ndarray,
     
     accuracy = np.mean(exact_matches)
     return accuracy
+
 
 def get_stats(val_predictions: Dict[str, List[int]], 
               y_true: pd.DataFrame, 
