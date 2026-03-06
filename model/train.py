@@ -342,7 +342,7 @@ def train_baselines(model_name: str,
     """
     Huấn luyện mô hình baseline
     """
-    model_name = model_name.split("_")[0].lower()
+    model_name = model_name.split("_")[1].lower()
 
     if model_name in ["xgboost", "lightgbm", "randomforest", "svm"]:
         return train_ml_model(**kwargs)
