@@ -112,9 +112,6 @@ def plot_graph_network(edges: Dict[Tuple[int, int], float],
     plt.show()
 
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 def plot_distractor_analysis(distractors: List[Tuple[int, float, float, float]],
                              top_k: int = 5):
     """
