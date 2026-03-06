@@ -9,6 +9,7 @@ import torch.nn as nn
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
+from sklearn.preprocessing import LabelEncoder
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 
@@ -51,6 +52,7 @@ class MLBaselineWrapper(nn.Module):
         # Bọc lại để dự đoán 6 thuộc tính cùng lúc
         self.multi_target_model = MultiOutputClassifier(base_model, n_jobs=1)
         self.is_fitted = False
+        self.label_encoders = []
 
     def extract_features(self, x: torch.Tensor) -> np.ndarray:
         with torch.no_grad():
@@ -66,7 +68,14 @@ class MLBaselineWrapper(nn.Module):
     def fit(self, 
             x_np: np.ndarray, 
             y_np: np.ndarray) -> None:
-        self.multi_target_model.fit(x_np, y_np)
+        self.label_encoders = [LabelEncoder() for _ in range(y_np.shape[1])]
+        
+        y_encoded = np.zeros_like(y_np)
+        for i in range(y_np.shape[1]):
+            # Mã hóa nhãn [1, 2, ..., 12] thành [0, 1, ..., 11]
+            y_encoded[:, i] = self.label_encoders[i].fit_transform(y_np[:, i])
+            
+        self.multi_target_model.fit(x_np, y_encoded)
         self.is_fitted = True
 
     def forward(self, x: torch.Tensor) -> List[torch.Tensor]:
@@ -74,13 +83,18 @@ class MLBaselineWrapper(nn.Module):
             raise RuntimeError(f"Mô hình {self.ml_type} chưa được huấn luyện! Hãy gọi .fit() trước.")
             
         features = self.extract_features(x)
-        
         probas = self.multi_target_model.predict_proba(features)
         
-        device = x.device
         outputs = []
-        for prob_array in probas:
-            tensor_prob = torch.tensor(prob_array, dtype=torch.float32, device=device)
+        for i, prob_array in enumerate(probas):
+            batch_size = x.size(0)
+            num_classes = self.num_classes_list[i]
+            tensor_prob = torch.zeros((batch_size, num_classes), dtype=torch.float32, device=x.device)
+            
+            original_classes = self.label_encoders[i].classes_
+            for new_idx, old_val in enumerate(original_classes):
+                tensor_prob[:, int(old_val)] = torch.tensor(prob_array[:, new_idx], dtype=torch.float32, device=x.device)
+                
             outputs.append(tensor_prob)
             
         return outputs
