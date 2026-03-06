@@ -2,11 +2,11 @@ from typing import Dict, Tuple
 from collections import defaultdict
 import torch
 
-def extract_causal_graph_edges(model: torch.nn.Module, 
-                               dataloader: torch.utils.data.DataLoader, 
-                               id_to_idx: Dict[int, int], 
-                               device: torch.device,
-                               layer_idx: int = 0) -> Dict[Tuple[int, int], float]:
+def extract_graph_edges(model: torch.nn.Module, 
+                        dataloader: torch.utils.data.DataLoader, 
+                        id_to_idx: Dict[int, int], 
+                        device: torch.device,
+                        layer_idx: int = 0) -> Dict[Tuple[int, int], float]:
     """
     Trích xuất trọng số cạnh từ GatedDirectedGAT để tìm ra mối quan hệ nhân quả
     """
