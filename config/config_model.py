@@ -53,6 +53,33 @@ class CONFIG_MODEL:
             "num_layers": 2,
             "max_seq_len": 500,
             "pad_token": 0
+        },
+        "baseline_rnn": {
+            "vocab_size": None, 
+            "num_classes_list": None,
+            "w2v_tensor": None, 
+            "embedding_dim": None, 
+            "hidden_dim": 256, 
+            "num_layers": 2, 
+            "dropout_rate": 0.3
+        },
+        "baseline_lstm": {
+            "vocab_size": None, 
+            "num_classes_list": None,
+            "w2v_tensor": None, 
+            "embedding_dim": None, 
+            "hidden_dim": 256, 
+            "num_layers": 2, 
+            "dropout_rate": 0.3
+        },
+        "baseline_gru": {
+            "vocab_size": None, 
+            "num_classes_list": None,
+            "w2v_tensor": None, 
+            "embedding_dim": None, 
+            "hidden_dim": 256, 
+            "num_layers": 2, 
+            "dropout_rate": 0.3
         }
     }
     

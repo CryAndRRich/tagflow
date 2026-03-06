@@ -1,9 +1,40 @@
 import copy
 from typing import List
+import joblib
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.amp import autocast, GradScaler
+
+def train_ml_model(model: torch.nn.Module, 
+                   train_loader: torch.utils.data.DataLoader, 
+                   checkpoint_file: str,
+                   device: torch.device):
+    """
+    Huấn luyện mô hình ML truyền thống (XGBoost, LightGBM, RandomForest, SVM)
+    """
+    x, y = [], []
+    for batch_x, batch_y in train_loader:
+        x.append(batch_x)
+        y.append(batch_y)
+        
+    # Nối lại thành 1 tensor lớn
+    x_tensor = torch.cat(x, dim=0).to(device)
+    y_tensor = torch.cat(y, dim=0)
+    
+    # Ép sang Numpy đặc trưng
+    x_features = model.extract_features(x_tensor)
+    y_numpy = y_tensor.cpu().numpy()
+    
+    print(f"Bắt đầu huấn luyện mô hình {model.ml_type}...")
+    model.fit(x_features, y_numpy)
+
+    # Lưu model
+    joblib.dump(model, checkpoint_file)
+    print(f"\n Hoàn thành huấn luyện | Mô hình được lưu tại: {checkpoint_file}")
+    
+    return model
+
 
 def train_pretrain_model(model: torch.nn.Module, 
                          dataloader: torch.utils.data.DataLoader, 
@@ -46,6 +77,7 @@ def train_pretrain_model(model: torch.nn.Module,
     torch.save(model.state_dict(), pretrain_file)
     if verbose:
         print(f"\n Pretraining hoàn thành. Trọng số đã được lưu tại: {pretrain_file}")
+
 
 def train_model_stage_1(model: torch.nn.Module, 
                         train_loader: torch.utils.data.DataLoader, 
@@ -303,3 +335,16 @@ def train_model_stage_2(model: torch.nn.Module,
     if verbose:
         print(f"\n Hoàn thành huấn luyện | Best Val EM: {best_exact_match:.4f}")
     return model
+
+
+def train_baselines(model_name: str,
+                    **kwargs) -> torch.nn.Module:
+    """
+    Huấn luyện mô hình baseline
+    """
+    model_name = model_name.split("_")[0].lower()
+
+    if model_name in ["xgboost", "lightgbm", "randomforest", "svm"]:
+        return train_ml_model(**kwargs)
+    else:
+        return train_model_stage_2(**kwargs)
