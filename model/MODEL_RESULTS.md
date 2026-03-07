@@ -58,18 +58,6 @@ Các mô hình baseline RNN, LSTM và GRU cũng được chạy 4 lần để so
 |Validation Exact Match| 0.9974 | 0.9971 | 0.9969 | 0.9968 | 0.9974 | 0.9971 | 0.0002 |
 |Public Test Exact Match| 0.9692 | 0.9704 | 0.9725 | 0.9720 | 0.9725 | 0.9708 | 0.0013 |
 
-## TAENet: Temporal Actions Ensemble Network (52m)
-| Metric | Trial 1 | Trial 2 | Trial 3 | Trial 4 | Best | Average | Variance |
-|--------|-------|-------|-------|-------|------|---------|----------|
-|Macro F1 Attribute 1| 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 1.0000 | 0.0000 |
-|Macro F1 Attribute 2| 1.0000 | 0.9998 | 1.0000 | 0.9998 | 1.0000 | 0.9999 | 0.0001 |
-|Macro F1 Attribute 3| 0.9981 | 0.9984 | 0.9979 | 0.9982 | 0.9984 | 0.9982 | 0.0002 |
-|Macro F1 Attribute 4| 0.9972 | 0.9949 | 0.9972 | 0.9949 | 0.9972 | 0.9958 | 0.0011 |
-|Macro F1 Attribute 5| 0.9994 | 0.9994 | 0.9993 | 0.9993 | 0.9994 | 0.9993 | 0.0001 |
-|Macro F1 Attribute 6| 0.9992 | 0.9989 | 0.9992 | 0.9990 | 0.9992 | 0.9991 | 0.0002 |
-|Validation Exact Match| 0.9971 | 0.9971 | 0.9969 | 0.9968 | 0.9974 | 0.9971 | 0.0002 |
-|Public Test Exact Match| 0.9716 | 0.9704 | 0.9725 | 0.9720 | 0.9725 | 0.9708 | 0.0013 |
-
 ## RNN Baseline (4m41s)
 | Metric | Trial 1 | Trial 2 | Trial 3 | Trial 4 | Best | Average | Variance |
 |--------|-------|-------|-------|-------|------|---------|----------|
