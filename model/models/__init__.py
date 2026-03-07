@@ -29,6 +29,7 @@ import model.models.tagnet
 import model.models.tacnet
 import model.models.tarnet
 import model.models.taanet
+import model.models.taenet
 
 import model.models.baselines.ml
 import model.models.baselines.rnn
