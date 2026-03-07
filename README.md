@@ -64,6 +64,7 @@ trustee/
 │   └── plot_graph.py                           # Các hàm hỗ trợ vẽ đồ thị, biểu đồ,...
 │
 ├── scripts/                                    
+│   ├── dataflow2026_hd4k_insight.ipynb         # Script chạy phân tích dữ liệu
 │   ├── dataflow2026_hd4k_run_pipeline.ipynb    # Script chạy toàn bộ pipeline
 │   ├── dataflow2026_hd4k_run_baselines.ipynb   # Script chạy các mô hình cơ sở
 │   ├── dataflow2026_hd4k_run_xai.ipynb         # Script giải thích mô hình với xAI
@@ -76,24 +77,17 @@ trustee/
 │   └── TAGFlow_slide_pdf.pdf                   # Slide thuyết trình dự án (pdf)
 │
 ├── .gitignore                       
-├── .gitattributes
 ├── LICENSE                                     # Giấy phép MIT
 ├── requirements.txt                            # Danh sách thư viện cần thiết
 └── README.md                                      
 ```
 
 ## 💻 Yêu cầu Hệ thống & Hướng dẫn Sử dụng
-Có tổng tất cả 3 scripts, cụ thể:
-- Script xử lý dữ liệu điểm thi THPTQG: dataflow2026_hd4k_process_vnhsge.ipynb
-    - Chạy local ngay trên máy tính cá nhân
-    - Đảm bảo đã cài đặt hai thư viện pandas và numpy
-    - Đảm bảo dung lượng ổ cứng trống ít nhất 1GB
-
-- Script huấn luyện và kiểm thử mô hình: dataflow2026_hd4k_run_model.ipynb
-    - Chạy trên Google Colab hoặc Kaggle
-
-- Script giải thích mô hình với xAI: dataflow2026_hd4k_run_explainer.ipynb
-    - Chạy trên Google Colab hoặc Kaggle
+Có tổng tất cả 4 scripts, tất cả đều cần chạy trên Kaggle, cụ thể:
+- Script chạy phân tích dữ liệu và rút ra insight: dataflow2026_hd4k_insight.ipynb  
+- Script chạy toàn bộ pipeline huấn luyện mô hình: dataflow2026_hd4k_run_baselines.ipynb
+- Script chạy các mô hình cơ sở để so sánh: dataflow2026_hd4k_run_explainer.ipynb
+- Script giải thích mô hình với xAI: dataflow2026_hd4k_run_xai.ipynb
 
 Chi tiết thông tin, hướng dẫn và thời gian chạy từng script có thể đọc trong chính các file jupyter notebook.
 
