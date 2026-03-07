@@ -21,7 +21,7 @@ Nếu bạn thấy dự án này hữu ích, hãy ủng hộ chúng tôi một n
 
 ## 📂 Cấu trúc Dự án
 ```text
-trustee/
+tagflow/
 ├── data/
 │   ├── submissions/                            # Các file kết quả nộp bài (submission)
 │   └── weights/                                # Nơi lưu trữ trọng số (weights) của các mô hình
