@@ -54,7 +54,7 @@ class CONFIG_MODEL:
             "max_seq_len": 500,
             "pad_token": 0
         },
-        "taanet": {
+        "taenet": {
             "vocab_size": None, 
             "num_classes_list": None,
             "w2v_tensor": None, 
