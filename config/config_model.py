@@ -54,6 +54,21 @@ class CONFIG_MODEL:
             "max_seq_len": 500,
             "pad_token": 0
         },
+        "taanet": {
+            "vocab_size": None, 
+            "num_classes_list": None,
+            "w2v_tensor": None, 
+            "seq_length": None, 
+            "embedding_dim": None, 
+            "rnn_hidden_dim": 256,
+            "rnn_num_layers": 2,
+            "cnn_kernel_sizes": [3, 5, 7], 
+            "cnn_expansion_factor": 2,
+            "gnn_window": 3,
+            "gnn_dilations": [1, 2, 4],
+            "gnn_heads": 4,
+            "dropout_rate": 0.3
+        },
         "baseline_rnn": {
             "vocab_size": None, 
             "num_classes_list": None,
